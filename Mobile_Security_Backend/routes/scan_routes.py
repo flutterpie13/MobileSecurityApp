@@ -1,13 +1,32 @@
+# routes/scan_routes.py
+
 from flask import Blueprint, request, jsonify
 from models.scan import db, Scan
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from schemas.scan_schema import PerformScanSchema
 
+# Zuerst den Blueprint definieren
 scan_blueprint = Blueprint('scan', __name__)
+
+
+@scan_blueprint.route('/secure-endpoint', methods=['GET'])
+@jwt_required()
+def secure_endpoint():
+    current_user = get_jwt_identity()
+    # Zugriff auf geschützte Ressourcen oder Daten
+    return jsonify(msg=f"Hello, {current_user}. This is a protected endpoint.")
 
 
 @scan_blueprint.route('/perform', methods=['POST'])
 def perform_scan():
-    """Führt einen Sicherheits-Scan aus."""
-    data = request.get_json()
+    data = request.get_json() or {}
+
+    # Validierung
+    schema = PerformScanSchema()
+    errors = schema.validate(data)
+    if errors:
+        return jsonify(errors), 400
+
     scan_type = data.get('scan_type')
     target = data.get('target')
 
