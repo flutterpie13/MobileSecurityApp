@@ -33,11 +33,25 @@ class RouteManager {
           ),
         );
       case '/results':
-        return MaterialPageRoute(builder: (_) => const ResultScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ResultScreen(
+            results: args['results'],
+            scanType: args['scanType'],
+            target: args['target'],
+          ),
+        );
       case '/history':
         return MaterialPageRoute(builder: (_) => HistoryScreen());
       case '/details':
-        return MaterialPageRoute(builder: (_) => const DetailScreen());
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => DetailScreen(
+            checkName: args['checkName'],
+            status: args['status'],
+            recommendations: args['recommendations'],
+          ),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
