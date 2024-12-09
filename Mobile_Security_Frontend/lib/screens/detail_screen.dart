@@ -2,27 +2,21 @@ import 'package:MobileSecurityApp/api_service.dart';
 import 'package:flutter/material.dart';
 
 class DetailScreen extends StatelessWidget {
-  const DetailScreen({Key? key}) : super(key: key);
+  final String checkName;
+  const DetailScreen({Key? key, required this.checkName}) : super(key: key);
 
-  Future<Map<String, dynamic>> _loadDetails(String checkName) {
-    return ApiService(
-            baseUrl: 'http://localhost:5000/scan/details?checkName=$checkName')
-        .getCheckDetails(checkName);
+  Future<Map<String, dynamic>> _loadDetails() {
+    return ApiService().getCheckDetails(checkName);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Arguments aus der Navigation holen
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final checkName = args['checkName'];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Check Details'),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
-        future: _loadDetails(checkName),
+        future: _loadDetails(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Während die Daten geladen werden, Lade-Indicator anzeigen

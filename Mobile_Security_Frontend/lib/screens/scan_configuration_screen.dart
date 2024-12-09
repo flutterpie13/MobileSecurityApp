@@ -1,10 +1,56 @@
 import 'package:flutter/material.dart';
 
 import '../api_service.dart';
-import '../utils/validation_utils.dart';
-import '../utils/error_handler.dart';
 
-class ScanConfigurationScreen extends StatefulWidget {
+class ScanConfigurationScreen extends StatelessWidget {
+  const ScanConfigurationScreen({Key? key}) : super(key: key);
+
+  Future<Map<String, dynamic>> _loadConfigOptions() {
+    return ApiService().getScanConfigurationOptions();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Scan Configuration'),
+      ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _loadConfigOptions(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Fehler beim Laden: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red)),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(
+                child: Text('Keine Konfigurationsoptionen verfügbar'));
+          } else {
+            final options = snapshot.data!;
+            // Beispiel: options = { "availableChecks": ["SQL Injection", "XSS", ...] }
+            final checks = List<String>.from(options['availableChecks'] ?? []);
+            return ListView.builder(
+              itemCount: checks.length,
+              itemBuilder: (context, index) {
+                final check = checks[index];
+                return ListTile(
+                  title: Text(check),
+                  onTap: () {
+                    // Hier könntest du eine Scan-Konfiguration starten
+                  },
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+/*class ScanConfigurationScreen extends StatefulWidget {
   @override
   _ScanConfigurationScreenState createState() =>
       _ScanConfigurationScreenState();
@@ -150,4 +196,4 @@ class _ScanConfigurationScreenState extends State<ScanConfigurationScreen> {
       ),
     );
   }
-}
+}*/

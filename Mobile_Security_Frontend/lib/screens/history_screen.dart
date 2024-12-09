@@ -1,92 +1,54 @@
+import 'package:MobileSecurityApp/api_service.dart';
 import 'package:flutter/material.dart';
-import '../database/database_service.dart';
 
-class HistoryScreen extends StatefulWidget {
-  @override
-  _HistoryScreenState createState() => _HistoryScreenState();
-}
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({Key? key}) : super(key: key);
 
-class _HistoryScreenState extends State<HistoryScreen> {
-  List<Map<String, dynamic>> history = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadHistory();
-  }
-
-  Future<void> _loadHistory() async {
-    final data = await DatabaseService.instance.getHistory();
-    setState(() {
-      history = data;
-    });
-  }
-
-  Future<void> _deleteHistory(int id) async {
-    final db = await DatabaseService.instance.database;
-    await db.delete('history', where: 'id = ?', whereArgs: [id]);
-    _loadHistory();
+  Future<List<dynamic>> _loadHistory() {
+    return ApiService().getHistory();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan History'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadHistory,
-          ),
-        ],
+        title: const Text('History'),
       ),
-      body: history.isEmpty
-          ? const Center(child: Text('No history found.'))
-          : ListView.builder(
+      body: FutureBuilder<List<dynamic>>(
+        future: _loadHistory(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Fehler beim Laden: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red)),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('Keine Scans in der History'));
+          } else {
+            final history = snapshot.data!;
+            return ListView.builder(
               itemCount: history.length,
               itemBuilder: (context, index) {
-                final entry = history[index];
+                final item = history[index];
+                // Erwartet: item = { "id": ..., "scan_type": ..., "target": ..., "created_at": ..., "results": ... }
                 return ListTile(
-                  leading: Icon(
-                    entry['status'] == 'pass'
-                        ? Icons.check_circle
-                        : Icons.error,
-                    color:
-                        entry['status'] == 'pass' ? Colors.green : Colors.red,
-                  ),
-                  title: Text(entry['name']),
-                  subtitle: Text('${entry['date']} at ${entry['time']}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteHistory(entry['id']),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_forward),
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/details',
-                            arguments: {
-                              'name': entry['name'],
-                              'status': entry['status'],
-                              'details':
-                                  'Detailed results for ${entry['name']}',
-                              'recommendations': [
-                                'Recommendation 1 for ${entry['name']}',
-                                'Recommendation 2 for ${entry['name']}',
-                              ],
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                  title: Text('Scan ${item['id']}: ${item['scan_type']}'),
+                  subtitle:
+                      Text('Target: ${item['target']} - ${item['created_at']}'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/results', arguments: {
+                      'scanType': item['scan_type'],
+                      'target': item['target']
+                    });
+                  },
                 );
               },
-            ),
+            );
+          }
+        },
+      ),
     );
   }
 }

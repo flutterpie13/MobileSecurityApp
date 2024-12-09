@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'screens/detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
@@ -14,39 +13,43 @@ class RouteManager {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/login':
-        return MaterialPageRoute(builder: (_) => LoginScreen());
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/register':
-        return MaterialPageRoute(builder: (_) => RegistrationScreen());
+        return MaterialPageRoute(builder: (_) => const RegistrationScreen());
       case '/settings':
-        return MaterialPageRoute(builder: (_) => SettingsScreen());
+        // Falls wir z. B. eine userId mitgeben:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final userId = args?['userId'];
+        return MaterialPageRoute(
+          builder: (_) => SettingsScreen(userId: userId),
+        );
       case '/scan-config':
-        return MaterialPageRoute(builder: (_) => ScanConfigurationScreen());
+        return MaterialPageRoute(
+            builder: (_) => const ScanConfigurationScreen());
       case '/scanning':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ScanningScreen(
             scanType: args['scanType'],
             target: args['target'],
-            selectedChecks: args['selectedChecks'],
           ),
         );
       case '/results':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => ResultScreen(
-            results: args['results'],
             scanType: args['scanType'],
             target: args['target'],
           ),
         );
       case '/history':
-        return MaterialPageRoute(builder: (_) => HistoryScreen());
+        return MaterialPageRoute(builder: (_) => const HistoryScreen());
       case '/details':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => DetailScreen(),
+          builder: (_) => DetailScreen(checkName: args['checkName']),
         );
       default:
         return MaterialPageRoute(

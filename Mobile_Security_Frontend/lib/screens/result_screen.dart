@@ -7,15 +7,11 @@ class ResultScreen extends StatelessWidget {
   final String scanType;
   final String target;
 
-  const ResultScreen({
-    Key? key,
-    required this.scanType,
-    required this.target,
-    required results,
-  }) : super(key: key);
+  const ResultScreen({Key? key, required this.scanType, required this.target})
+      : super(key: key);
 
   Future<void> _exportPDF(
-      BuildContext context, Map<String, String> results) async {
+      BuildContext context, Map<String, dynamic> results) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -42,11 +38,8 @@ class ResultScreen extends StatelessWidget {
         bytes: await pdf.save(), filename: 'scan_results.pdf');
   }
 
-  Future<Map<String, String>> _loadResults() {
-    return ApiService(
-            baseUrl:
-                'http://localhost:5000/scan/results?scanType=$scanType&target=$target')
-        .getScanResults(scanType, target);
+  Future<Map<String, dynamic>> _loadResults() {
+    return ApiService().getScanResults(scanType, target);
   }
 
   @override
@@ -55,36 +48,28 @@ class ResultScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Scan Results'),
       ),
-      body: FutureBuilder<Map<String, String>>(
+      body: FutureBuilder<Map<String, dynamic>>(
         future: _loadResults(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Während die Daten geladen werden
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            // Fehlerfall anzeigen
             return Center(
-              child: Text(
-                'Fehler beim Laden: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
-              ),
+              child: Text('Fehler beim Laden: ${snapshot.error}',
+                  style: const TextStyle(color: Colors.red)),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            // Keine Daten vorhanden
             return const Center(child: Text('Keine Daten'));
           } else {
-            // Erfolgsfall: Daten liegen vor
             final results = snapshot.data!;
-
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Scan Results',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Scan Results',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   Expanded(
                     child: ListView.builder(
@@ -102,12 +87,7 @@ class ResultScreen extends StatelessWidget {
                             Navigator.pushNamed(
                               context,
                               '/details',
-                              arguments: {
-                                'checkName': checkName,
-                                'status': status,
-                                'recommendations':
-                                    'Details and recommendations for $checkName.',
-                              },
+                              arguments: {'checkName': checkName},
                             );
                           },
                         );

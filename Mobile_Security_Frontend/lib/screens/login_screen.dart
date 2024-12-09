@@ -1,94 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../api_service.dart';
-import '../state/app_state_secure.dart';
-import '../utils/validation_utils.dart';
-import '../utils/error_handler.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _apiService =
-      ApiService(baseUrl: 'http://127.0.0.1:5000'); // Backend-URL
-  String _email = '';
-  String _password = '';
-  bool _isLoading = false;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
+  String? _errorMessage;
 
-  Future<void> _submitLogin() async {
-    if (_formKey.currentState!.validate()) {
+  void _login() async {
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final result = await ApiService()
+          .login(_emailController.text, _passwordController.text);
+      // success -> Access Token etc. verwenden
+      Navigator.pushNamed(context, '/home');
+    } catch (e) {
       setState(() {
-        _isLoading = true;
+        _errorMessage = 'Login fehlgeschlagen: $e';
       });
-
-      try {
-        final response = await _apiService.login(_email, _password);
-
-        final appState = Provider.of<AppState>(context, listen: false);
-        await appState.setUserEmail(_email);
-        await appState.saveToken(response['token']);
-
-        Navigator.pushReplacementNamed(context, '/home');
-      } catch (e) {
-        ErrorHandler.showError(context, e.toString());
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: ValidationUtils.validateEmail,
-                onSaved: (value) => _email = value!,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  if (_errorMessage != null)
+                    Text(_errorMessage!,
+                        style: const TextStyle(color: Colors.red)),
+                  TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                  ),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _login,
+                    child: const Text('Login'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: ValidationUtils.validatePassword,
-                onSaved: (value) => _password = value!,
-              ),
-              const SizedBox(height: 16),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          _submitLogin();
-                        }
-                      },
-                      child: const Text('Login'),
-                    ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-                child: const Text('Don\'t have an account? Register'),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
