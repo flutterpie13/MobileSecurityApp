@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:provider/provider.dart';
 import 'route_manager.dart';
 import 'secure_storage/token_manager.dart';
@@ -7,20 +8,34 @@ import 'state/app_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   final TokenManager tokenManager = TokenManager();
   final token = await tokenManager.loadToken();
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AppState()),
-      ],
-      child: MyApp(
-        startRoute: token == null ? '/login' : '/home',
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return const Material(
+      child: Center(
+        child: Text(
+          'Ein unerwarteter Fehler ist aufgetreten.',
+          style: TextStyle(color: Colors.red),
+        ),
       ),
-    ),
-  );
+    );
+  };
+
+  runZonedGuarded(() {
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppState()),
+        ],
+        child: MyApp(
+          startRoute: token == null ? '/login' : '/home',
+        ),
+      ),
+    );
+  }, (error, stackTrace) {
+    // Hier kannst du Logging-Mechanismen einbauen oder Sentry integrieren.
+    print('Uncaught error: $error');
+  });
 }
 
 class MyApp extends StatelessWidget {

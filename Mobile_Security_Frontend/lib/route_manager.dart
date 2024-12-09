@@ -46,11 +46,7 @@ class RouteManager {
       case '/details':
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
-          builder: (_) => DetailScreen(
-            checkName: args['checkName'],
-            status: args['status'],
-            recommendations: args['recommendations'],
-          ),
+          builder: (_) => DetailScreen(),
         );
       default:
         return MaterialPageRoute(

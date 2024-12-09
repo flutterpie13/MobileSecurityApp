@@ -58,3 +58,22 @@ def scan_history():
         } for scan in scans
     ]
     return jsonify(history), 200
+
+
+@scan_blueprint.route('/results', methods=['GET'])
+def get_scan_results():
+    scan_type = request.args.get('scanType')
+    target = request.args.get('target')
+
+    # Beispiel: Suche nach einem Scan in der Datenbank, der zu scanType und target passt
+    # Hier musst du deine eigene Logik einbauen, wie du die Daten ablegst und abrufst.
+    scan = Scan.query.filter_by(scan_type=scan_type, target=target).first()
+    if not scan:
+        return jsonify({'message': 'No results found for the given parameters.'}), 404
+
+    # Wenn `scan.results` z. B. ein JSON-String ist, der die Ergebnisse der Checks enthält
+    # (etwa {"SQL Injection":"Pass","XSS":"Fail"}), dann dekodiere diesen:
+    import json
+    results = json.loads(scan.results)
+
+    return jsonify(results), 200

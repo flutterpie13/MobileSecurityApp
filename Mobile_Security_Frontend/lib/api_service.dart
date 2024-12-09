@@ -100,4 +100,51 @@ class ApiService {
       throw Exception('Check failed: ${response.reasonPhrase}');
     }
   }
+
+  Future<Map<String, dynamic>> getData(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        // JSON parsen
+        return {'data': response.body};
+      } else {
+        // Hier HTTP-Fehler behandeln
+        throw Exception('Serverfehler: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Netzwerkfehler, DNS-Fehler etc.
+      throw Exception('Netzwerkfehler: $e');
+    }
+  }
+
+  Future<Map<String, String>> getScanResults(
+      String scanType, String target) async {
+    // Hier ein Beispiel-Endpunkt. Passe die URL an dein Backend an.
+    final url =
+        'https://dein-backend.com/scan_results?scanType=$scanType&target=$target';
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      // Gehe davon aus, dass decoded ein Map ist, die CheckName:Status enthält.
+      // Eventuell brauchst du hier noch Konvertierungslogik.
+      return Map<String, String>.from(decoded);
+    } else {
+      throw Exception(
+          'Fehler beim Laden der Scan-Ergebnisse: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>> getCheckDetails(String checkName) async {
+    // Passe die URL an dein Backend an:
+    final url = 'http://localhost:5000/scan/details?checkName=$checkName';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+      // Erwartet: { "status": "Pass", "recommendations": "..." }
+    } else {
+      throw Exception(
+          'Fehler beim Laden der Detailinformationen: ${response.statusCode}');
+    }
+  }
 }
