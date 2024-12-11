@@ -8,10 +8,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import logging
 from logging.handlers import RotatingFileHandler
+from flask_cors import CORS
 
 
 app = Flask(__name__)
-
+CORS(app, supports_credentials=True)
 # App Configuration
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'

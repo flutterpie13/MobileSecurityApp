@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_security_app/api_service.dart';
 
+import '../app_theme.dart';
 import '../route_manager/app_localization.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -95,78 +96,124 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final over18Label = AppLocalizations.getTranslatedText(context, 'over_18');
     final termsLabel =
         AppLocalizations.getTranslatedText(context, 'accept_terms');
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(registerLabel),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (_errorMessage != null)
-                      Text(
-                        _errorMessage!,
-                        style: const TextStyle(color: Colors.red),
+        appBar: AppBar(
+          title: Text(registerLabel,
+              style: TextStyle(fontSize: LayoutConfig.fontSize * 1.2)),
+        ),
+        body: LayoutBuilder(builder: (context, constraints) {
+          return SingleChildScrollView(
+              child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight, // Füllt den verfügbaren Platz
+            ),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: EdgeInsets.all(LayoutConfig.padding),
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (_errorMessage != null)
+                            Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: LayoutConfig.fontSize),
+                            ),
+                          SizedBox(height: LayoutConfig.spacing),
+                          TextField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              labelText: emailLabel,
+                              labelStyle:
+                                  TextStyle(fontSize: LayoutConfig.fontSize),
+                            ),
+                            style: TextStyle(fontSize: LayoutConfig.fontSize),
+                          ),
+                          SizedBox(height: LayoutConfig.spacing),
+                          TextField(
+                            controller: _passwordController,
+                            decoration: InputDecoration(
+                              labelText: passwordLabel,
+                              labelStyle:
+                                  TextStyle(fontSize: LayoutConfig.fontSize),
+                            ),
+                            obscureText: false,
+                            style: TextStyle(fontSize: LayoutConfig.fontSize),
+                          ),
+                          SizedBox(height: LayoutConfig.spacing),
+                          TextField(
+                            controller: _confirmPasswordController,
+                            decoration: InputDecoration(
+                              labelText: confirmPasswordLabel,
+                              labelStyle:
+                                  TextStyle(fontSize: LayoutConfig.fontSize),
+                            ),
+                            obscureText: false,
+                            style: TextStyle(fontSize: LayoutConfig.fontSize),
+                          ),
+                          SizedBox(height: LayoutConfig.spacing),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _over18,
+                                onChanged: (val) {
+                                  setState(() {
+                                    _over18 = val ?? false;
+                                  });
+                                },
+                              ),
+                              Expanded(
+                                child: Text(
+                                  over18Label,
+                                  style: TextStyle(
+                                      fontSize: LayoutConfig.fontSize),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: LayoutConfig.smallSpacing),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _acceptedTerms,
+                                onChanged: (val) {
+                                  setState(() {
+                                    _acceptedTerms = val ?? false;
+                                  });
+                                },
+                              ),
+                              Expanded(
+                                child: Text(
+                                  termsLabel,
+                                  style: TextStyle(
+                                      fontSize: LayoutConfig.fontSize),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: LayoutConfig.spacing),
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: _isFormValid() ? _register : null,
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: LayoutConfig.smallSpacing,
+                                horizontal: LayoutConfig.spacing,
+                              ),
+                            ),
+                            child: Text(registerLabel,
+                                style:
+                                    TextStyle(fontSize: LayoutConfig.fontSize)),
+                          ),
+                        ],
                       ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _emailController,
-                      decoration: InputDecoration(labelText: emailLabel),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(labelText: passwordLabel),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: _confirmPasswordController,
-                      decoration:
-                          InputDecoration(labelText: confirmPasswordLabel),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _over18,
-                          onChanged: (val) {
-                            setState(() {
-                              _over18 = val ?? false;
-                            });
-                          },
-                        ),
-                        Expanded(child: Text(over18Label)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _acceptedTerms,
-                          onChanged: (val) {
-                            setState(() {
-                              _acceptedTerms = val ?? false;
-                            });
-                          },
-                        ),
-                        Expanded(child: Text(termsLabel)),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _isFormValid() ? _register : null,
-                      child: Text(registerLabel),
-                    ),
-                  ],
-                ),
               ),
-      ),
-    );
+            ),
+          ));
+        }));
   }
 }

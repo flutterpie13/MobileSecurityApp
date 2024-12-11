@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mobile_security_app/route_manager.dart';
+import 'package:path/path.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
+import 'app_theme.dart';
 import 'route_manager/app_localization.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
@@ -13,6 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final TokenManager tokenManager = TokenManager();
   final token = await tokenManager.loadToken();
+
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return const Material(
       child: Center(
@@ -44,14 +48,14 @@ void main() async {
 class MyApp extends StatefulWidget {
   final String startRoute;
 
-  MyApp({required this.startRoute});
+  const MyApp({required this.startRoute});
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  Locale _locale = Locale('en');
+  Locale _locale = const Locale('en');
 
   void _changeLanguage(Locale locale) {
     setState(() {
@@ -61,25 +65,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      locale: _locale,
-      theme: ThemeData.dark(),
-      supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('de', 'DE'),
-      ],
-      localizationsDelegates: const [
-        AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      initialRoute: widget.startRoute,
-      routes: {
-        '/login': (context) => LoginScreen(onLocaleChange: _changeLanguage),
-        '/home': (context) => HomeScreen(onLocaleChange: _changeLanguage),
-        '/settings': (context) =>
-            SettingsScreen(onLocaleChange: _changeLanguage),
-      },
-    );
+    return Builder(builder: (context) {
+      // Hier LayoutConfig initialisieren
+      LayoutConfig.init(context);
+      return MaterialApp(
+        locale: _locale,
+        theme: ThemeData.dark(),
+        supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        initialRoute: widget.startRoute,
+        onGenerateRoute: RouteManager.generateRoute,
+      );
+    });
   }
 }

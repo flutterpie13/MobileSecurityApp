@@ -1,45 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
-import 'package:flutter_localizations/flutter_localizations.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      locale: const Locale('de'), // Standardmäßig auf Deutsch setzen
-      supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('de', 'DE'),
-      ],
-      localizationsDelegates: const [
-        AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var localizations = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations?.translate('login') ?? 'Login'),
-      ),
-      body: Center(
-        child: Text(localizations?.translate('welcome') ?? 'Welcome'),
-      ),
-    );
-  }
-}
 
 class AppLocalizations {
   final Locale locale;

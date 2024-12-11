@@ -68,7 +68,10 @@
 "error_loading_settings": "Fehler beim Laden der Einstellungen",
 "settings": "Einstellungen",
 "logout": "Abmelden",
-"delete": "Löschen"
+"delete": "Löschen",
+"accept_terms": "Ich akzeptiere die Nutzungsbedingungen",
+"register_successful": "Registrierung erfolgreich. Bitte melden Sie sich an.",
+"over_18": "Ich bin über 18 Jahre alt."
 
 
 

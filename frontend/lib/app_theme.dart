@@ -68,3 +68,25 @@ class ResponsiveLayout extends StatelessWidget {
     );
   }
 }
+
+class LayoutConfig {
+  static late double scaleFactor;
+  static late double padding;
+  static late double spacing;
+  static late double smallSpacing;
+  static late double fontSize;
+  static late double greatSpacing;
+  static late double greatPadding;
+
+  static void init(BuildContext context, {double baseWidth = 375.0}) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    scaleFactor = screenWidth / baseWidth;
+
+    padding = 30.0 * scaleFactor;
+    greatPadding = 60.0 * scaleFactor;
+    spacing = 30.0 * scaleFactor;
+    smallSpacing = 15.0 * scaleFactor;
+    greatSpacing = 60.0 * scaleFactor;
+    fontSize = 14.0 * scaleFactor;
+  }
+}

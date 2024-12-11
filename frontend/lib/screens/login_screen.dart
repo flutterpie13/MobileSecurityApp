@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../api_service.dart';
+import '../app_theme.dart';
 import '../route_manager/app_localization.dart';
 import '../state/app_state_secure.dart';
 import '../utils/validation_utils.dart';
@@ -56,78 +57,137 @@ class _LoginScreenState extends State<LoginScreen> {
     final passwordLabel =
         AppLocalizations.getTranslatedText(context, 'password');
     final loginLabel = AppLocalizations.getTranslatedText(context, 'login');
+    final noAccountLabel =
+        AppLocalizations.getTranslatedText(context, 'no_account_register');
+    final forgotPasswordLabel =
+        AppLocalizations.getTranslatedText(context, 'forgot_password');
+    final loginTitle =
+        AppLocalizations.getTranslatedText(context, 'login_title');
     final germanLabel = AppLocalizations.getTranslatedText(context, 'german');
     final englishLabel = AppLocalizations.getTranslatedText(context, 'english');
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.getTranslatedText(context, 'login_title')),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: emailLabel),
-                validator: ValidationUtils.validateEmail,
-                onSaved: (value) => _email = value!,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                decoration: InputDecoration(labelText: passwordLabel),
-                obscureText: true,
-                validator: ValidationUtils.validatePassword,
-                onSaved: (value) => _password = value!,
-              ),
-              const SizedBox(height: 16),
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _submitLogin();
-                        }
-                      },
-                      child: Text(loginLabel),
-                    ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-                child: Text(AppLocalizations.getTranslatedText(
-                    context, 'no_account_register')),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/forgot-password');
-                },
-                child: Text(AppLocalizations.getTranslatedText(
-                    context, 'forgot_password')),
-              ),
-              const SizedBox(height: 50),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                TextButton(
-                  onPressed: () {
-                    widget.onLocaleChange(const Locale('de'));
-                  },
-                  child: Text(germanLabel),
-                ),
-                const SizedBox(width: 8),
-                TextButton(
-                  onPressed: () {
-                    widget.onLocaleChange(const Locale('en'));
-                  },
-                  child: Text(englishLabel),
-                ),
-              ])
-            ],
-          ),
+        appBar: AppBar(
+          title: Text(loginTitle,
+              style: TextStyle(fontSize: LayoutConfig.fontSize * 1.2)),
         ),
-      ),
-    );
+        body: LayoutBuilder(builder: (context, constraints) {
+          return SingleChildScrollView(
+              child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight, // Füllt den verfügbaren Platz
+            ),
+            child: IntrinsicHeight(
+              child: Padding(
+                padding: EdgeInsets.all(LayoutConfig.greatPadding),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: emailLabel,
+                          labelStyle:
+                              TextStyle(fontSize: LayoutConfig.fontSize),
+                        ),
+                        validator: ValidationUtils.validateEmail,
+                        onSaved: (value) => _email = value!,
+                        style: TextStyle(fontSize: LayoutConfig.fontSize),
+                      ),
+                      SizedBox(height: LayoutConfig.spacing),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: passwordLabel,
+                          labelStyle:
+                              TextStyle(fontSize: LayoutConfig.fontSize),
+                        ),
+                        obscureText: true,
+                        validator: ValidationUtils.validatePassword,
+                        onSaved: (value) => _password = value!,
+                        style: TextStyle(fontSize: LayoutConfig.fontSize),
+                      ),
+                      SizedBox(height: LayoutConfig.spacing),
+                      _isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _submitLogin();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: LayoutConfig.smallSpacing,
+                                  horizontal: LayoutConfig.smallSpacing,
+                                ),
+                              ),
+                              child: Text(loginLabel,
+                                  style: TextStyle(
+                                      fontSize: LayoutConfig.fontSize)),
+                            ),
+                      SizedBox(height: LayoutConfig.greatSpacing),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/register');
+                        },
+                        child: Text(
+                          noAccountLabel,
+                          style: TextStyle(fontSize: LayoutConfig.fontSize),
+                        ),
+                      ),
+                      SizedBox(height: LayoutConfig.smallSpacing),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/forgot-password');
+                        },
+                        child: Text(
+                          forgotPasswordLabel,
+                          style: TextStyle(fontSize: LayoutConfig.fontSize),
+                        ),
+                      ),
+                      //SizedBox(height: LayoutConfig.spacing),
+                      const Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              widget.onLocaleChange(Locale('de'));
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: LayoutConfig.smallSpacing,
+                                horizontal: LayoutConfig.spacing,
+                              ),
+                            ),
+                            child: Text(germanLabel,
+                                style:
+                                    TextStyle(fontSize: LayoutConfig.fontSize)),
+                          ),
+                          SizedBox(height: LayoutConfig.smallSpacing),
+                          TextButton(
+                            onPressed: () {
+                              widget.onLocaleChange(Locale('en'));
+                            },
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: LayoutConfig.smallSpacing,
+                                horizontal: LayoutConfig.spacing,
+                              ),
+                            ),
+                            child: Text(englishLabel,
+                                style:
+                                    TextStyle(fontSize: LayoutConfig.fontSize)),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ));
+        }));
   }
 }
