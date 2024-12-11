@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
-import 'route_manager.dart';
 import 'route_manager/app_localization.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/settings_screen.dart';
 import 'secure_storage/token_manager.dart';
-import 'app_entry.dart';
 import 'state/app_state.dart';
 
 void main() async {
@@ -65,6 +63,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       locale: _locale,
+      theme: ThemeData.dark(),
       supportedLocales: const [
         Locale('en', 'US'),
         Locale('de', 'DE'),
