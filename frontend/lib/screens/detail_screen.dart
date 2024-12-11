@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_security_app/api_service.dart';
+import 'package:mobile_security_app/route_manager/app_localization.dart';
 
 class DetailScreen extends StatelessWidget {
   final String checkName;
@@ -13,7 +14,8 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Check Details'),
+        title:
+            Text(AppLocalizations.getTranslatedText(context, 'Check Details')),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _loadDetails(),
@@ -31,13 +33,16 @@ class DetailScreen extends StatelessWidget {
             );
           } else if (!snapshot.hasData) {
             // Keine Daten vorhanden
-            return const Center(child: Text('Keine Daten vorhanden'));
+            return Center(
+                child: Text(AppLocalizations.getTranslatedText(
+                    context, 'Keine Daten vorhanden')));
           } else {
             // Erfolgsfall: Daten liegen vor
             final data = snapshot.data!;
             final status = data['status'] ?? 'Unbekannt';
-            final recommendations =
-                data['recommendations'] ?? 'Keine Empfehlungen verfügbar';
+            final recommendations = data['recommendations'] ??
+                AppLocalizations.getTranslatedText(
+                    context, 'Keine Empfehlungen verfügbar');
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -67,8 +72,9 @@ class DetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Recommendations:',
+                  Text(
+                    AppLocalizations.getTranslatedText(
+                        context, 'recommendations'),
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -85,7 +91,8 @@ class DetailScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Back to Results'),
+                    child: Text(AppLocalizations.getTranslatedText(
+                        context, 'back_to_results')),
                   ),
                 ],
               ),

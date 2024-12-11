@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api_service.dart';
+import '../route_manager/app_localization.dart';
 
 class ScanningScreen extends StatelessWidget {
   final String scanType;
@@ -21,7 +22,7 @@ class ScanningScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scanning...'),
+        title: Text(AppLocalizations.getTranslatedText(context, 'scanning')),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _performScan(),
@@ -34,7 +35,9 @@ class ScanningScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.red)),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Keine Scan-Ergebnisse'));
+            return Center(
+                child: Text(AppLocalizations.getTranslatedText(
+                    context, 'no_scan_results')));
           } else {
             final results = snapshot.data!;
             // Nachdem der Scan abgeschlossen ist, kannst du direkt zum ResultScreen navigieren
@@ -43,8 +46,9 @@ class ScanningScreen extends StatelessWidget {
               Navigator.pushNamed(context, '/results',
                   arguments: {'scanType': scanType, 'target': target});
             });
-            return const Center(
-                child: Text('Scan abgeschlossen, Weiterleitung...'));
+            return Center(
+                child: Text(AppLocalizations.getTranslatedText(
+                    context, 'scan_finished')));
           }
         },
       ),

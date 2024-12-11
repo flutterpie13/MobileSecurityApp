@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api_service.dart';
+import '../route_manager/app_localization.dart';
 
 class ScanConfigurationScreen extends StatelessWidget {
   const ScanConfigurationScreen({Key? key}) : super(key: key);
@@ -13,7 +14,8 @@ class ScanConfigurationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Configuration'),
+        title: Text(
+            AppLocalizations.getTranslatedText(context, 'scan_configuration')),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _loadConfigOptions(),
@@ -26,8 +28,10 @@ class ScanConfigurationScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.red)),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-                child: Text('Keine Konfigurationsoptionen verfügbar'));
+            return Center(
+              child: Text(AppLocalizations.getTranslatedText(
+                  context, 'no_scan_configuration')),
+            );
           } else {
             final options = snapshot.data!;
             // Beispiel: options = { "availableChecks": ["SQL Injection", "XSS", ...] }

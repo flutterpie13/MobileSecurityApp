@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_security_app/api_service.dart';
 
+import '../route_manager/app_localization.dart';
+
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
@@ -25,7 +27,9 @@ class HistoryScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.red)),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Keine Scans in der History'));
+            return Center(
+                child: Text(AppLocalizations.getTranslatedText(
+                    context, 'no_scan_results_at_history')));
           } else {
             final history = snapshot.data!;
             return ListView.builder(

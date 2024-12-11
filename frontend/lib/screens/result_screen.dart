@@ -3,6 +3,8 @@ import 'package:mobile_security_app/api_service.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+import '../route_manager/app_localization.dart';
+
 class ResultScreen extends StatelessWidget {
   final String scanType;
   final String target;
@@ -46,7 +48,8 @@ class ResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Results'),
+        title:
+            Text(AppLocalizations.getTranslatedText(context, 'scan_results')),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _loadResults(),
@@ -59,7 +62,9 @@ class ResultScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.red)),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Keine Daten'));
+            return Center(
+                child: Text(
+                    AppLocalizations.getTranslatedText(context, 'no_data')));
           } else {
             final results = snapshot.data!;
             return Padding(
@@ -67,9 +72,11 @@ class ResultScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('Scan Results',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                      AppLocalizations.getTranslatedText(
+                          context, 'scan_results'),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   Expanded(
                     child: ListView.builder(
@@ -97,7 +104,8 @@ class ResultScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => _exportPDF(context, results),
-                    child: const Text('Export as PDF'),
+                    child: Text(AppLocalizations.getTranslatedText(
+                        context, 'export_pdf')),
                   ),
                 ],
               ),

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-
 import '../api_service.dart';
-import '../utils/error_handler.dart';
-
-import 'package:flutter/material.dart';
+import '../route_manager/app_localization.dart';
 
 class SettingsScreen extends StatelessWidget {
   final String? userId;
+  final Function(Locale) onLocaleChange;
 
-  const SettingsScreen({Key? key, this.userId}) : super(key: key);
+  const SettingsScreen({Key? key, this.userId, required this.onLocaleChange})
+      : super(key: key);
 
   Future<Map<String, dynamic>> _loadSettings() {
     // Falls userId nötig ist:
@@ -20,7 +19,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(AppLocalizations.getTranslatedText(context, 'settings')),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _loadSettings(),
@@ -29,22 +28,38 @@ class SettingsScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
-              child: Text('Fehler beim Laden: ${snapshot.error}',
-                  style: const TextStyle(color: Colors.red)),
-            );
-          } else if (!snapshot.hasData) {
-            return const Center(child: Text('Keine Einstellungen verfügbar'));
-          } else {
-            final settings = snapshot.data!;
-            // Zeige Settings an, z. B.:
-            return ListView(
-              children: [
-                ListTile(
-                  title: Text('Theme: ${settings['theme']}'),
+                child: Text(AppLocalizations.of(context)
+                        ?.translate('error_loading_settings') ??
+                    'Error loading settings'));
+          } else if (snapshot.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  AppLocalizations.getTranslatedText(
+                      context, 'change_language'),
                 ),
-                // Weitere Settings...
+                ElevatedButton(
+                    onPressed: () {
+                      onLocaleChange(Locale('de'));
+                    },
+                    child: Text(
+                      AppLocalizations.getTranslatedText(context, 'german'),
+                    )),
+                ElevatedButton(
+                    onPressed: () {
+                      onLocaleChange(Locale('en'));
+                    },
+                    child: Text(
+                      AppLocalizations.getTranslatedText(context, 'english'),
+                    )),
+                // Weitere Einstellungen hier anzeigen
               ],
             );
+          } else {
+            return Center(
+                child: Text(AppLocalizations.getTranslatedText(
+                    context, 'no_settings_found')));
           }
         },
       ),

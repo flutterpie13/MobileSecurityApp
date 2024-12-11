@@ -13,11 +13,16 @@ class RouteManager {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(
+            builder: (_) => LoginScreen(onLocaleChange: (locale) {}));
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute(
+            builder: (_) => LoginScreen(
+                  onLocaleChange: (locale) {},
+                ));
       case '/home':
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(
+            builder: (_) => HomeScreen(onLocaleChange: (locale) {}));
       case '/register':
         return MaterialPageRoute(builder: (_) => const RegistrationScreen());
       case '/settings':
@@ -25,7 +30,8 @@ class RouteManager {
         final args = settings.arguments as Map<String, dynamic>?;
         final userId = args?['userId'];
         return MaterialPageRoute(
-          builder: (_) => SettingsScreen(userId: userId),
+          builder: (_) =>
+              SettingsScreen(userId: userId, onLocaleChange: (locale) {}),
         );
       case '/scan-config':
         return MaterialPageRoute(

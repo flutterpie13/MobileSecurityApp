@@ -31,5 +31,34 @@
   "error_occurred": "An error occurred.",
   "success": "Success",
   "login_successful": "Login successful.",
-  "registration_successful": "Registration successful. Please log in."
+  "registration_successful": "Registration successful. Please log in.",
+  "password_changed": "Password changed successfully.",
+  "account_deleted": "Account deleted successfully.",
+  "no_account": "Don't have an account? Register",
+  "no_data": "No data",
+  "scan_configuration": "Scan Configuration",
+  "no_scan_configuration": "No configuration options available",
+  "scan_finished": "Scan finished, redirecting...",
+  "no_scan_results": "No scan results",
+  "scan": "Scanning...",
+  "change_language": "Change Language",
+  "english": "English",
+  "german": "German",
+  "scan_history": "Scan History",
+  "error_messages": {
+    "unexpected_error": "An unexpected error occurred.",
+    "login_failed": "Login failed: {error}",
+    "registration_failed": "Registration failed: {error}",
+    "error_loading_settings": "Error loading settings",
+    "error_loading_data": "Error loading data",
+    "no_data_found": "No data found",
+    "no_settings_found": "No settings found"
+  },
+
+  "scan_results_for": "Scan results for",
+  "scan_results_for_target": "Scan results for {target}",
+  "no_data_available": "No data available",
+  "no_recommendations_available": "No recommendations available",
+  "details": "Details",
+  "no_scan_results_at_history": "No scans in history"
 }

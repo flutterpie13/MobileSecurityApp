@@ -31,5 +31,43 @@
   "error_occurred": "Ein Fehler ist aufgetreten.",
   "success": "Erfolg",
   "login_successful": "Anmeldung erfolgreich.",
-  "registration_successful": "Registrierung erfolgreich. Bitte melden Sie sich an."
+  "registration_successful": "Registrierung erfolgreich. Bitte melden Sie sich an.",
+  "password_changed": "Passwort erfolgreich geändert.",
+  "account_deleted": "Konto erfolgreich gelöscht.",
+  "no_account": "Noch keinen Account? Registrieren",
+  "scan_results_for": "Scan-Ergebnisse für",
+  "scan_results_for_target": "Scan-Ergebnisse für {target}",
+  "no_data_available":"Keine Daten vorhanden",
+  "no_recommendations_available": "Keine Empfehlungen verfügbar",
+  "details": "Details",
+  "no_scan_results_at_history": "Keine Scans in der History",
+  "error_loading_data": "Fehler beim Laden der Daten",
+  "no_scan_history": "Keine Scan-Historie",
+
+  "error_messages": {
+    "unexpected_error": "Ein unerwarteter Fehler ist aufgetreten.",
+    "login_failed": "Login fehlgeschlagen: {error}",
+    "registration_failed": "Registrierung fehlgeschlagen: {error}",
+    "error_loading_settings": "Fehler beim Laden der Einstellungen",
+    "error_loading_data": "Fehler beim Laden der Daten",
+    "no_data_found": "Keine Daten gefunden",
+    "no_settings_found": "Keine Einstellungen gefunden"
+  },
+"no_data": "Keine Daten",
+"scan_configuration": "Scan Konfiguration",
+"no_scan_configuration": "Keine Konfigurationsoptionen verfügbar",
+"scan_finished": "Scan abgeschlossen, Weiterleitung...",
+"no_scan_results": "Keine Scan-Ergebnisse",
+"scan": "Scanning...",
+"change_language": "Sprache ändern",
+"english": "Englisch",
+"german": "Deutsch",
+"scan_history": "Scan-Historie",
+"error_loading_settings": "Fehler beim Laden der Einstellungen",
+"settings": "Einstellungen",
+"logout": "Abmelden",
+"delete": "Löschen"
+
+
+
 }

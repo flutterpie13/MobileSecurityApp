@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_security_app/api_service.dart';
 
+import '../route_manager/app_localization.dart';
+
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
 
@@ -11,6 +13,10 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  // Controller für das Bestätigungsfeld
+  // toDo ändern
+  final _confirmPasswordController = TextEditingController();
   bool _loading = false;
   String? _errorMessage;
 
@@ -43,7 +49,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text(AppLocalizations.getTranslatedText(context, 'register')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -57,19 +63,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       _errorMessage!,
                       style: const TextStyle(color: Colors.red),
                     ),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(labelText: 'Email'),
                   ),
+                  const SizedBox(height: 16),
                   TextField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(
+                        labelText: AppLocalizations.getTranslatedText(
+                            context, 'password')),
                     obscureText: true,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 25),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.getTranslatedText(
+                          context, 'confirm_password'),
+                    ),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 25),
                   ElevatedButton(
                     onPressed: _register,
-                    child: const Text('Register'),
+                    child: Text(AppLocalizations.getTranslatedText(
+                        context, 'register')),
                   ),
                 ],
               ),

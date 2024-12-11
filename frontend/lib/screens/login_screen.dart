@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../api_service.dart';
+import '../route_manager/app_localization.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  final Function(Locale) onLocaleChange;
+
+  const LoginScreen({Key? key, required this.onLocaleChange}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -39,7 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: Text(AppLocalizations.getTranslatedText(context, 'login')),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _loading
@@ -51,24 +56,51 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: const TextStyle(color: Colors.red)),
                   TextField(
                     controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: InputDecoration(
+                        labelText: AppLocalizations.getTranslatedText(
+                            context, 'email')),
                   ),
                   TextField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: InputDecoration(
+                        labelText: AppLocalizations.getTranslatedText(
+                            context, 'password')),
                     obscureText: true,
                   ),
-                  const SizedBox(height: 16),
+                  if (_errorMessage != null)
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  if (_loading)
+                    const CircularProgressIndicator()
+                  else
+                    ElevatedButton(
+                      onPressed: _login,
+                      child: Text(
+                          AppLocalizations.getTranslatedText(context, 'login')),
+                    ),
                   ElevatedButton(
-                    onPressed: _login,
-                    child: const Text('Login'),
-                  ),
+                      onPressed: () {
+                        widget.onLocaleChange(Locale('de'));
+                      },
+                      child: Text(
+                        AppLocalizations.getTranslatedText(context, 'german'),
+                      )),
+                  ElevatedButton(
+                      onPressed: () {
+                        widget.onLocaleChange(Locale('en'));
+                      },
+                      child: Text(
+                        AppLocalizations.getTranslatedText(context, 'english'),
+                      )),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/register');
                     },
-                    child: const Text('Noch keinen Account? Registrieren'),
+                    child: Text(AppLocalizations.getTranslatedText(
+                        context, 'no_account')),
                   ),
                 ],
               ),
