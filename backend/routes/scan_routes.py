@@ -41,13 +41,6 @@ def perform_scan():
 
     return jsonify({'message': 'Scan performed successfully.', 'results': results}), 200
 
-    # Scan-Ergebnisse speichern
-    new_scan = Scan(scan_type=scan_type, target=target, results=str(results))
-    db.session.add(new_scan)
-    db.session.commit()
-
-    return jsonify({'message': 'Scan performed successfully.', 'results': results}), 200
-
 
 @scan_blueprint.route('/history', methods=['GET'])
 @jwt_required()
@@ -126,3 +119,8 @@ def config_options():
         ]
     }
     return jsonify(options), 200
+
+
+@scan_blueprint.route("/", methods=["GET"])
+def scan_home():
+    return jsonify({"message": "Scan endpoint works!"})

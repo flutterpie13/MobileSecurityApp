@@ -1,39 +1,48 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+import argparse
+from models import db  # Datenbankmodell
+import os
+from flask import request
+# from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from models import db  # Hier ist db bereits definiert
-from routes.auth_routes import auth_blueprint
-from routes.scan_routes import scan_blueprint
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import logging
-from logging.handlers import RotatingFileHandler
 from flask_cors import CORS
+from flask_migrate import Migrate
+from logging.handlers import RotatingFileHandler
+import logging
+from app import create_app, db
 
 
-app = Flask(__name__)
+# Flask-App erstellen
+app = create_app()
 CORS(app, supports_credentials=True)
-# App Configuration
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# JWT-Konfiguration für Cookie-basierten Auth mit CSRF-Schutz
-app.config['JWT_SECRET_KEY'] = 'dein-very-secret-key'
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-# In Produktion auf True setzen (HTTPS verwenden!)
-app.config['JWT_COOKIE_SECURE'] = False
+# Konfiguration aus Umgebungsvariablen oder Fallbacks laden
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_fallback_secret_key')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
+    'DATABASE_URL', 'sqlite:///database.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'fallback_jwt_key')
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config['JWT_COOKIE_SECURE'] = False  # In Produktion auf True setzen
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
 app.config['JWT_ACCESS_COOKIE_NAME'] = 'access_token_cookie'
 app.config['JWT_REFRESH_COOKIE_NAME'] = 'refresh_token_cookie'
+
+# Initialisierung von Modulen
 jwt = JWTManager(app)
 
-# Initialize the database
-db.init_app(app)
+migrate = Migrate(app, db)
 
-# Register Blueprints
-app.register_blueprint(auth_blueprint, url_prefix='/auth')
-app.register_blueprint(scan_blueprint, url_prefix='/scan')
+# Ratenbegrenzung mit Redis
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri="redis://localhost:6379",  # Redis verwenden
+    default_limits=["200 per day", "50 per hour"]
+)
+
+# Sicherheitsheader hinzufügen
 
 
 @app.after_request
@@ -41,21 +50,13 @@ def add_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
-    # Content-Security-Policy anpassen, je nach Bedarf (hier sehr restriktiv als Beispiel)
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self';"
     return response
 
 
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["200 per day", "50 per hour"]
-
-)
+# Logging konfigurieren
 logger = logging.getLogger('mobile_security_app')
 logger.setLevel(logging.INFO)
-
-# Rotierender File-Handler, um Logfiles unter Kontrolle zu halten
 handler = RotatingFileHandler('app.log', maxBytes=100000, backupCount=3)
 formatter = logging.Formatter(
     '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]')
@@ -69,8 +70,19 @@ def log_request_info():
         f"Request: {request.method} {request.path} from {request.remote_addr}")
 
 
+# Datenbank beim Start initialisieren
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Run the Flask app.")
+    parser.add_argument("--host", default="0.0.0.0",
+                        help="Host to run the app on")
+    parser.add_argument("--port", type=int, default=8000,
+                        help="Port to run the app on")
+    args = parser.parse_args()
     with app.app_context():
-        db.create_all()  # Hier wird die Datenbank erstellt
+
+        db.create_all()
         print("Datenbank und Tabellen erfolgreich erstellt.")
-    app.run(debug=True)
+
+# app.run(debug=False) for production
+
+    app.run(host=args.host, port=args.port, debug=False)
